@@ -30,11 +30,6 @@ class Bakery implements LoggerAwareInterface
      */
     protected $host;
 
-    /**
-     * @var Host[]
-     */
-    protected $tunnels;
-
     function __construct(Host $host, LoggerInterface $output = null, \Closure $status_callback = null)
     {
         $this->logger          = new NullLogger();
@@ -86,40 +81,6 @@ class Bakery implements LoggerAwareInterface
     public function getStatusCallback()
     {
         return $this->status_callback;
-    }
-
-    /**
-     * Set all SSH hosts that must be traversed before reaching the target host
-     *
-     * @param Host[] $tunnels
-     * @return $this
-     */
-    public function setTunnels(array $tunnels)
-    {
-        $this->tunnels = $tunnels;
-        return $this;
-    }
-
-    /**
-     * Get all SSH hosts that must be traversed before reaching the target host
-     *
-     * @return Host[]
-     */
-    public function getTunnels()
-    {
-        return $this->tunnels;
-    }
-
-    /**
-     * Add a tunnel to the connection path
-     *
-     * @param Host $tunnel
-     * @return $this
-     */
-    public function addTunnel(Host $tunnel)
-    {
-        $this->tunnels[] = $tunnel;
-        return $this;
     }
 
     /**
@@ -202,65 +163,25 @@ class Bakery implements LoggerAwareInterface
      */
     protected function connect()
     {
-        /** @var Connection $leaf */
-        $leaf       = null;
-        $node_count = count($this->tunnels) + 1;
-        $progress   = 1;
-
-        // Connect to tunnel nodes
-        foreach ($this->tunnels as $host) {
-            $this->status(
-                Phase::CONNECTION(),
-                $progress,
-                $node_count,
-                "Connecting to tunnel node ".$host->getHostname().':'.$host->getPort()
-            );
-
-            if ($leaf) {
-                $con = $leaf->tunnel($host->getHostname(), $host->getPort(), $host->getCredential());
-            } else {
-                $con = new Connection($host->getHostname(), $host->getPort(), $host->getCredential());
-                $con->setLogger($this->logger);
-                if (!$con->connect()) {
-                    $this->status(Phase::ERROR(), $progress, $node_count, "Failed to connect to tunnel node");
-                    $con->disconnectChain();
-                    return null;
-                }
-            }
-
-            if (!$con->authenticate()) {
-                $this->status(Phase::ERROR(), $progress, $node_count, "Failed to authenticate on tunnel node");
-                $con->disconnectChain();
-                return null;
-            }
-
-            $progress++;
-            $leaf = $con;
-        }
-
         // Connect to target host
         $this->status(
             Phase::CONNECTION(),
-            $progress,
-            $node_count,
+            1,
+            1,
             "Connecting to target host ".$this->host->getHostname().':'.$this->host->getPort()
         );
 
-        if ($leaf) {
-            $con = $leaf->tunnel($this->host->getHostname(), $this->host->getPort(), $this->host->getCredential());
-            $con->connect();
-        } else {
-            $con = new Connection($this->host->getHostname(), $this->host->getPort(), $this->host->getCredential());
-            $con->setLogger($this->logger);
-            if (!$con->connect()) {
-                $this->status(Phase::ERROR(), $progress, $node_count, "Failed to connect to target host");
-                $con->disconnectChain();
-                return null;
-            }
+        $con = new Connection($this->host->getHostname(), $this->host->getPort(), $this->host->getCredential());
+        $con->setLogger($this->logger);
+
+        if (!$con->connect()) {
+            $this->status(Phase::ERROR(), 1, 1, "Failed to connect to target host");
+            $con->disconnectChain();
+            return null;
         }
 
         if (!$con->authenticate()) {
-            $this->status(Phase::ERROR(), $progress, $node_count, "Failed to authenticate on target host");
+            $this->status(Phase::ERROR(), 1, 1, "Failed to authenticate on target host");
             $con->disconnectChain();
             return null;
         }

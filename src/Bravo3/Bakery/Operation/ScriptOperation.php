@@ -17,7 +17,7 @@ class ScriptOperation extends AbstractOperation implements OperationInterface
 
         foreach ($this->payload as $command) {
             $output = $this->shell->sendSmartCommand($command, false);
-            $this->logger->info($output);
+            $this->logger->info($this->getPrompt().$this->cleanOutout($output));
         }
 
         return true;

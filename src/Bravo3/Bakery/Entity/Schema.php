@@ -46,10 +46,12 @@ class Schema implements \IteratorAggregate
      * Add an operation to the schema
      *
      * @param OperationInterface $operation
+     * @return $this
      */
     public function addOperation(OperationInterface $operation)
     {
         $this->operations[] = $operation;
+        return $this;
     }
 
     /**

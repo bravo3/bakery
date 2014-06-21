@@ -30,6 +30,12 @@ class AbstractOperation
      */
     protected $callback;
 
+    /**
+     * @var string
+     */
+    protected $prompt = '# ';
+
+
     function __construct($payload = null)
     {
         $this->payload = $payload;
@@ -81,6 +87,39 @@ class AbstractOperation
     {
         $this->callback = $callback;
         return $this;
+    }
+
+    /**
+     * Remove the smart console marker
+     *
+     * @param string $output
+     * @return string
+     */
+    protected function cleanOutout($output)
+    {
+        return str_replace("\r\n".$this->shell->getSmartMarker(), '', $output);
+    }
+
+    /**
+     * Set the prompt marker - this is just a prefix to identify commands from output
+     *
+     * @param string $prompt
+     * @return $this
+     */
+    public function setPrompt($prompt)
+    {
+        $this->prompt = $prompt;
+        return $this;
+    }
+
+    /**
+     * Get the prompt marker - this is just a prefix to identify commands from output
+     *
+     * @return string
+     */
+    public function getPrompt()
+    {
+        return $this->prompt;
     }
 
 }
