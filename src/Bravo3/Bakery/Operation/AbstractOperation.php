@@ -35,6 +35,15 @@ class AbstractOperation
      */
     protected $prompt = '# ';
 
+    /**
+     * @var string
+     */
+    protected $log_prefix = '/tmp/bakery';
+
+    /**
+     * @var int
+     */
+    protected static $log_index = 0;
 
     function __construct($payload = null)
     {
@@ -120,6 +129,96 @@ class AbstractOperation
     public function getPrompt()
     {
         return $this->prompt;
+    }
+
+    /**
+     * Define the path and prefix to save log files in
+     *
+     * @param string $path eg: /tmp/bakery
+     * @return $this
+     */
+    public function setLogPrefix($path)
+    {
+        $this->log_prefix = $path;
+        return $this;
+    }
+
+    /**
+     * Send a command, logging error output to the filesystem
+     *
+     * The output of the commands will be send to the logger.
+     *
+     * @param string   $cmd
+     * @param int      $timeout
+     * @param string[] $allowed_errors Convert these errors to notices
+     * @return bool True if the command completes without error
+     */
+    protected function sendCommand($cmd, $timeout = 15, array $allowed_errors = [])
+    {
+        $this->logger->debug("Exec: ".$cmd);
+        $log_file = $this->log_prefix.'-'.(self::$log_index++).'.error.log';
+        $output   = $this->shell->sendSmartCommand($cmd.' 2> '.$log_file, false, $timeout);
+        $errors   = $this->shell->sendSmartCommand('cat '.$log_file, true, 3);
+        $this->output($output);
+
+        if ($errors) {
+            if (in_array($errors, $allowed_errors)) {
+                // Acceptable errors
+                $this->logger->notice($errors);
+                return true;
+            } else {
+                // Unacceptable errors
+                $this->logger->debug("Command returned errors:");
+                $this->error($errors);
+                return false;
+            }
+        } else {
+            // No errors
+            return true;
+        }
+    }
+
+    /**
+     * Log output
+     *
+     * @param string $output
+     * @return $this
+     */
+    protected function output($output)
+    {
+        $this->logger->info($this->getPrompt().$this->cleanOutout($output));
+        return $this;
+    }
+
+    /**
+     * Log error output
+     *
+     * @param string $output
+     * @return $this
+     */
+    protected function error($output)
+    {
+        $this->logger->error($this->cleanOutout($output));
+        return $this;
+    }
+
+    /**
+     * Use 'sudo -i' to enter root
+     */
+    protected function enterRoot()
+    {
+        $this->shell->sendln("sudo -i");
+        $output = $this->shell->waitForContent(0.5);
+        $this->output($output);
+        $this->shell->setSmartConsole();
+    }
+
+    /**
+     * Use 'exit' to exit root
+     */
+    protected function exitRoot()
+    {
+        $this->sendCommand('exit', 2, ['logout']);
     }
 
 }

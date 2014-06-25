@@ -7,7 +7,6 @@ use Psr\Log\LoggerAwareInterface;
 
 interface OperationInterface extends LoggerAwareInterface
 {
-
     /**
      * Set PackagerType
      *
@@ -15,7 +14,6 @@ interface OperationInterface extends LoggerAwareInterface
      * @return $this
      */
     public function setPackagerType(PackagerType $packager_type);
-
 
     /**
      * Set the operation payload
@@ -48,4 +46,11 @@ interface OperationInterface extends LoggerAwareInterface
      */
     public function execute();
 
+    /**
+     * Define the path to save log files in
+     *
+     * @param string $path
+     * @return $this
+     */
+    public function setLogPrefix($path);
 }

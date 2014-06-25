@@ -4,20 +4,20 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "535602bf149ffc7f1f022c4f2ccd8272",
+    "hash": "9e0993e739414bcd8526f8b8e83f7b39",
     "packages": [
         {
             "name": "bravo3/ssh",
-            "version": "1.4.1",
+            "version": "1.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bravo3/ssh.git",
-                "reference": "4248bc808a63039b0fc202bfc1d1a13dee379774"
+                "reference": "680469ffcd1d64b4078553dba2b9626346a6a0cc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bravo3/ssh/zipball/4248bc808a63039b0fc202bfc1d1a13dee379774",
-                "reference": "4248bc808a63039b0fc202bfc1d1a13dee379774",
+                "url": "https://api.github.com/repos/bravo3/ssh/zipball/680469ffcd1d64b4078553dba2b9626346a6a0cc",
+                "reference": "680469ffcd1d64b4078553dba2b9626346a6a0cc",
                 "shasum": ""
             },
             "require": {
@@ -54,7 +54,7 @@
                 "ssh",
                 "ssh2"
             ],
-            "time": "2014-06-21 06:20:23"
+            "time": "2014-06-25 00:49:19"
         },
         {
             "name": "bravo3/standards",
