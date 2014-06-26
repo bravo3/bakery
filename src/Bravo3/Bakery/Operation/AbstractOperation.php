@@ -36,6 +36,9 @@ class AbstractOperation
     protected $prompt = '# ';
 
     /**
+     * This is a path + file prefix on the REMOTE to send stderr output to for smart commands.
+     * It will then be scanned to detect any errors a command may throw.
+     *
      * @var string
      */
     protected $log_prefix = '/tmp/bakery';
@@ -104,9 +107,9 @@ class AbstractOperation
      * @param string $output
      * @return string
      */
-    protected function cleanOutout($output)
+    protected function cleanOutput($output)
     {
-        return str_replace("\r\n".$this->shell->getSmartMarker(), '', $output);
+        return str_replace("\n".$this->shell->getSmartMarker(), '', $this->normaliseEol($output));
     }
 
     /**
@@ -157,8 +160,8 @@ class AbstractOperation
     {
         $this->logger->debug("Exec: ".$cmd);
         $log_file = $this->log_prefix.'-'.(self::$log_index++).'.error.log';
-        $output   = $this->shell->sendSmartCommand($cmd.' 2> '.$log_file, false, $timeout);
-        $errors   = trim($this->shell->sendSmartCommand('cat '.$log_file, true, 3));
+        $output   = $this->shell->sendSmartCommand($cmd.' 2> '.$log_file, false, $timeout, true);
+        $errors   = trim($this->shell->sendSmartCommand('cat '.$log_file, true, 3, true));
         $this->output($output);
 
         if ($errors) {
@@ -186,7 +189,7 @@ class AbstractOperation
      */
     protected function output($output)
     {
-        $this->logger->info($this->getPrompt().$this->cleanOutout($output));
+        $this->logger->info($this->getPrompt().$this->cleanOutput($output));
         return $this;
     }
 
@@ -198,7 +201,7 @@ class AbstractOperation
      */
     protected function error($output)
     {
-        $this->logger->error($this->cleanOutout($output));
+        $this->logger->error($this->cleanOutput($output));
         return $this;
     }
 
@@ -219,6 +222,17 @@ class AbstractOperation
     protected function exitRoot()
     {
         $this->sendCommand('exit', 2, ['logout']);
+    }
+
+    /**
+     * Ensure all line-endings are in the form \n
+     *
+     * @param string $str
+     * @return string
+     */
+    protected function normaliseEol($str)
+    {
+        return str_replace("\r\n", "\n", $str);
     }
 
 }

@@ -48,8 +48,7 @@ class EnvironmentOperation extends AbstractOperation implements OperationInterfa
                     $cmd = 'set '.$key.'="'.$value.'"';
             }
 
-            $output = $this->shell->sendSmartCommand($cmd, false);
-            $this->logger->info($this->getPrompt().$this->cleanOutout($output));
+            $this->output($this->shell->sendSmartCommand($cmd, false));
         }
 
         return true;
