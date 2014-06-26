@@ -158,7 +158,7 @@ class AbstractOperation
         $this->logger->debug("Exec: ".$cmd);
         $log_file = $this->log_prefix.'-'.(self::$log_index++).'.error.log';
         $output   = $this->shell->sendSmartCommand($cmd.' 2> '.$log_file, false, $timeout);
-        $errors   = $this->shell->sendSmartCommand('cat '.$log_file, true, 3);
+        $errors   = trim($this->shell->sendSmartCommand('cat '.$log_file, true, 3));
         $this->output($output);
 
         if ($errors) {
