@@ -3,9 +3,12 @@ namespace Bravo3\Bakery\Tests;
 
 use Bravo3\Bakery\Bakery;
 use Bravo3\Bakery\Entity\Host;
+use Bravo3\Bakery\Entity\Repository;
 use Bravo3\Bakery\Entity\Schema;
 use Bravo3\Bakery\Enum\PackagerType;
 use Bravo3\Bakery\Enum\Phase;
+use Bravo3\Bakery\Enum\RepositoryType;
+use Bravo3\Bakery\Operation\CodeCheckoutOperation;
 use Bravo3\Bakery\Operation\EnvironmentOperation;
 use Bravo3\Bakery\Operation\InstallPackagesOperation;
 use Bravo3\Bakery\Operation\ScriptOperation;
@@ -38,6 +41,14 @@ class BakeryTest extends \PHPUnit_Framework_TestCase
         $bakery = new Bakery($host, $logger_out, $callback);
         $bakery->setLogger($logger_bake);
 
+        $repo = new Repository();
+        $repo->setRepositoryType(RepositoryType::GIT());
+        $repo->setCheckoutPath('/tmp/test-repo');
+        $repo->setUri('https://github.com/jordonsc/hyperion_dbal.git');
+        $repo->setUsername('xxx');
+        $repo->setPassword('xxx');
+        //$repo->setTag('feature/stderr');
+
         $schema = new Schema(PackagerType::APT());
         $schema->addOperation(
             new EnvironmentOperation([
@@ -45,10 +56,14 @@ class BakeryTest extends \PHPUnit_Framework_TestCase
                 'action' => '1234',
             ])
         )->addOperation(
-                new UpdatePackagesOperation()
-        )->addOperation(
-            new InstallPackagesOperation(['apache2', 'mysql-server'])
+            new CodeCheckoutOperation($repo)
         );
+
+//            ->addOperation(
+//                new UpdatePackagesOperation()
+//        )->addOperation(
+//            new InstallPackagesOperation(['apache2', 'mysql-server'])
+//        );
 
         $this->assertTrue($bakery->bake($schema));
     }

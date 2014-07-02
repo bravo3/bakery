@@ -2,6 +2,7 @@
 namespace Bravo3\Bakery\Operation;
 
 use Bravo3\Bakery\Enum\PackagerType;
+use Bravo3\SSH\Connection;
 use Bravo3\SSH\Shell;
 use Psr\Log\LoggerAwareInterface;
 
@@ -30,6 +31,14 @@ interface OperationInterface extends LoggerAwareInterface
      * @return $this
      */
     public function setShell(Shell $shell);
+
+    /**
+     * Set SSH connection
+     *
+     * @param Connection $connection
+     * @return $this
+     */
+    public function setConnection($connection);
 
     /**
      * Set the status callback

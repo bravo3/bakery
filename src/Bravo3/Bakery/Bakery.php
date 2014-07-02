@@ -6,6 +6,9 @@ use Bravo3\Bakery\Entity\Schema;
 use Bravo3\Bakery\Enum\Phase;
 use Bravo3\Bakery\Operation\OperationInterface;
 use Bravo3\SSH\Connection;
+use Bravo3\SSH\Enum\TerminalType;
+use Bravo3\SSH\Enum\TerminalUnit;
+use Bravo3\SSH\Terminal;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
@@ -120,7 +123,7 @@ class Bakery implements LoggerAwareInterface
         }
 
         // Get an SSH stream
-        $shell = $con->getShell();
+        $shell = $con->getShell(new Terminal(1000, 25, TerminalUnit::CHARACTERS));
         $this->status(Phase::ENVIRONMENT(), 1, 1, 'Configuring environment');
         $shell->setSmartConsole();
 
@@ -133,6 +136,7 @@ class Bakery implements LoggerAwareInterface
             $operation->setCallback($this->status_callback);
             $operation->setPackagerType($schema->getPackagerType());
             $operation->setShell($shell);
+            $operation->setConnection($con);
             if (!$operation->execute()) {
                 $this->status(Phase::ERROR(), $pos + 1, $total, 'Operation failed, aborting');
                 return false;
