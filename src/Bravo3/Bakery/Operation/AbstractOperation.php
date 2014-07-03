@@ -2,6 +2,8 @@
 namespace Bravo3\Bakery\Operation;
 
 use Bravo3\Bakery\Enum\PackagerType;
+use Bravo3\Bakery\Enum\Phase;
+use Bravo3\SSH\Connection;
 use Bravo3\SSH\Shell;
 use Psr\Log\LoggerAwareTrait;
 
@@ -26,6 +28,11 @@ class AbstractOperation
     protected $shell;
 
     /**
+     * @var Connection
+     */
+    protected $connection;
+
+    /**
      * @var callable
      */
     protected $callback;
@@ -47,6 +54,7 @@ class AbstractOperation
      * @var int
      */
     protected static $log_index = 0;
+
 
     function __construct($payload = null)
     {
@@ -87,6 +95,28 @@ class AbstractOperation
     {
         $this->shell = $shell;
         return $this;
+    }
+
+    /**
+     * Set SSH connection
+     *
+     * @param Connection $connection
+     * @return $this
+     */
+    public function setConnection($connection)
+    {
+        $this->connection = $connection;
+        return $this;
+    }
+
+    /**
+     * Get SSH connection
+     *
+     * @return Connection
+     */
+    public function getConnection()
+    {
+        return $this->connection;
     }
 
     /**
@@ -194,6 +224,18 @@ class AbstractOperation
     }
 
     /**
+     * Log output, but do not prefix the prompt or clean the output
+     *
+     * @param $output
+     * @return $this
+     */
+    protected function rawOutput($output)
+    {
+        $this->logger->info($output);
+        return $this;
+    }
+
+    /**
      * Log error output
      *
      * @param string $output
@@ -233,6 +275,27 @@ class AbstractOperation
     protected function normaliseEol($str)
     {
         return str_replace("\r\n", "\n", $str);
+    }
+
+
+    /**
+     * Report status to the log and callback
+     *
+     * From an operation, the Phase should only ever be Phase::SUB_OPERATION() or Phase::ERROR().
+     *
+     * @param Phase  $phase
+     * @param int    $step
+     * @param int    $total
+     * @param string $message
+     */
+    protected function status(Phase $phase, $step, $total, $message)
+    {
+        $this->logger->info('['.$phase->value().'] '.$message);
+
+        if ($this->callback) {
+            $closure = $this->callback;
+            $closure($phase, $step, $total, $message);
+        }
     }
 
 }
