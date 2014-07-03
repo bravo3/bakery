@@ -25,7 +25,8 @@ class BakeryTest extends \PHPUnit_Framework_TestCase
      */
     public function testStuff()
     {
-        $host            = new Host('127.0.0.1', 22, new KeyCredential('jordon', null, '/home/jordon/.ssh/jordon.pem'));
+        //$host            = new Host('127.0.0.1', 22, new KeyCredential('jordon', null, '/home/jordon/.ssh/jordon.pem'));
+        $host            = new Host('54.206.100.211', 22, new KeyCredential('ec2-user', null, '/home/jordon/.ssh/test-sydney.pem'));
         $logger_bake     = new FileLogger("/tmp/bakery_bake.log", false, true);
         $logger_callback = new FileLogger("/tmp/bakery_callback.log", false, true);
         $logger_out      = new FileLogger("/tmp/bakery_out.log", false, true);
@@ -44,12 +45,12 @@ class BakeryTest extends \PHPUnit_Framework_TestCase
         $repo = new Repository();
         $repo->setRepositoryType(RepositoryType::GIT());
         $repo->setCheckoutPath('/tmp/test-repo');
-        $repo->setUri('https://github.com/jordonsc/hyperion_dbal.git');
-        $repo->setUsername('xxx');
-        $repo->setPassword('xxx');
-        //$repo->setTag('feature/stderr');
+        $repo->setUri('git@github.com:jordonsc/hyperion_dbal.git');
+        $repo->setPrivateKey(file_get_contents('/home/jordon/.ssh/jordon.pem'));
+        $repo->setTag('c38a0835235003a08d3f5f851f57ba5914cff98e');
+        $repo->setHostFingerprint('16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48');
 
-        $schema = new Schema(PackagerType::APT());
+        $schema = new Schema(PackagerType::YUM());
         $schema->addOperation(
             new EnvironmentOperation([
                 'env' => 'bake',

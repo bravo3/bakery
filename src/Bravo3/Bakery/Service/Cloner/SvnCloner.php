@@ -1,5 +1,5 @@
 <?php
-namespace Bravo3\Bakery\Services;
+namespace Bravo3\Bakery\Service\Cloner;
 
 class SvnCloner extends AbstractCloner implements RepositoryCloner
 {

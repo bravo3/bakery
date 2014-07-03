@@ -1,5 +1,5 @@
 <?php
-namespace Bravo3\Bakery\Services;
+namespace Bravo3\Bakery\Service\Cloner;
 
 use Bravo3\Bakery\Entity\Repository;
 use Bravo3\SSH\Shell;

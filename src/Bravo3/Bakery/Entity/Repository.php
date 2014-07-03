@@ -41,6 +41,11 @@ class Repository
     protected $checkout_path;
 
     /**
+     * @var string
+     */
+    protected $host_fingerprint = null;
+
+    /**
      * Set Password
      *
      * @param string $password
@@ -193,5 +198,31 @@ class Repository
     {
         return $this->checkout_path;
     }
+
+    /**
+     * Set the host fingerprint (in hex bytes) - this will make the Cloner check for man-in-the-middle attacks
+     *
+     * eg: 16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48
+     *
+     * @param string $host_fingerprint
+     * @return $this
+     */
+    public function setHostFingerprint($host_fingerprint)
+    {
+        $this->host_fingerprint = $host_fingerprint;
+        return $this;
+    }
+
+    /**
+     * Get the host fingerprint (in hex bytes)
+     *
+     * @return string
+     */
+    public function getHostFingerprint()
+    {
+        return $this->host_fingerprint;
+    }
+
+
 
 } 

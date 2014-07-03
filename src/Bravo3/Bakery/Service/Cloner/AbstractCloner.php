@@ -1,5 +1,5 @@
 <?php
-namespace Bravo3\Bakery\Services;
+namespace Bravo3\Bakery\Service\Cloner;
 
 use Bravo3\Bakery\Entity\Repository;
 use Bravo3\SSH\Shell;
@@ -101,6 +101,9 @@ class AbstractCloner
      */
     public function sendCommand($cmd, $timeout = 15)
     {
+        if (substr($this->output, -1) !== "\n") {
+            $this->addLog("\n");
+        }
         $this->addLog($this->getPrompt().$cmd."\n");
         $this->addLog($this->shell->sendSmartCommand($cmd, true, $timeout, true));
     }
