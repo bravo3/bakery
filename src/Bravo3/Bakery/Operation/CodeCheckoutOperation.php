@@ -33,6 +33,8 @@ class CodeCheckoutOperation extends AbstractOperation implements OperationInterf
             return false;
         }
 
+        $this->status(Phase::CODE_CHECKOUT());
+
         // Will install private keys, passwords, etc for the repos
         $credential_helper = new RemoteCredentialHelper($this->shell);
         if ($this->payload->getPrivateKey()) {

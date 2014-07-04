@@ -1,6 +1,7 @@
 <?php
 namespace Bravo3\Bakery\Operation;
 
+use Bravo3\Bakery\Enum\Phase;
 use Bravo3\SSH\Enum\ShellType;
 
 
@@ -33,6 +34,8 @@ class EnvironmentOperation extends AbstractOperation implements OperationInterfa
      */
     public function execute()
     {
+        $this->status(Phase::ENVIRONMENT());
+
         $this->shell_type = $this->shell->getShellType();
         $this->logger->debug("Remote shell is identifying as ".$this->shell_type->value());
 

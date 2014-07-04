@@ -2,6 +2,7 @@
 namespace Bravo3\Bakery\Operation;
 
 use Bravo3\Bakery\Enum\PackagerType;
+use Bravo3\Bakery\Enum\Phase;
 
 class InstallPackagesOperation extends AbstractOperation implements OperationInterface
 {
@@ -14,6 +15,8 @@ class InstallPackagesOperation extends AbstractOperation implements OperationInt
      */
     public function execute()
     {
+        $this->status(Phase::INSTALL_PACKAGES());
+
         $this->enterRoot();
         $this->payload = (array)$this->payload;
 

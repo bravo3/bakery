@@ -288,7 +288,7 @@ class AbstractOperation
      * @param int    $total
      * @param string $message
      */
-    protected function status(Phase $phase, $step, $total, $message)
+    protected function status(Phase $phase, $step = 0, $total = 0, $message = '')
     {
         $this->logger->info('['.$phase->value().'] '.$message);
 

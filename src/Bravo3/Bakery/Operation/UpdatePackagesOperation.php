@@ -2,6 +2,7 @@
 namespace Bravo3\Bakery\Operation;
 
 use Bravo3\Bakery\Enum\PackagerType;
+use Bravo3\Bakery\Enum\Phase;
 
 class UpdatePackagesOperation extends AbstractOperation implements OperationInterface
 {
@@ -16,6 +17,7 @@ class UpdatePackagesOperation extends AbstractOperation implements OperationInte
     {
         $this->enterRoot();
 
+        $this->status(Phase::UPDATE_PACKAGES());
 
         switch ($this->packager_type) {
             default:

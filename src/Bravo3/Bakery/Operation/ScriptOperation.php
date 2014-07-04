@@ -1,6 +1,8 @@
 <?php
 namespace Bravo3\Bakery\Operation;
 
+use Bravo3\Bakery\Enum\Phase;
+
 class ScriptOperation extends AbstractOperation implements OperationInterface
 {
 
@@ -19,6 +21,8 @@ class ScriptOperation extends AbstractOperation implements OperationInterface
         if (!is_array($this->payload)) {
             $this->payload = explode("\n", $this->payload);
         }
+
+        $this->status(Phase::SCRIPT());
 
         foreach ($this->payload as $command) {
             $this->output($this->shell->sendSmartCommand($command, false, $this->timeout, true));
