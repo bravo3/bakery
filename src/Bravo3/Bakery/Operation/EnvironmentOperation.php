@@ -29,8 +29,6 @@ class EnvironmentOperation extends AbstractOperation implements OperationInterfa
 
     /**
      * Run the operation
-     *
-     * @return bool
      */
     public function execute()
     {
@@ -53,8 +51,6 @@ class EnvironmentOperation extends AbstractOperation implements OperationInterfa
 
             $this->output($this->shell->sendSmartCommand($cmd, false));
         }
-
-        return true;
     }
 
     /**

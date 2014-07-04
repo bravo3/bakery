@@ -13,8 +13,6 @@ class ScriptOperation extends AbstractOperation implements OperationInterface
 
     /**
      * Run the operation
-     *
-     * @return bool
      */
     public function execute()
     {
@@ -27,8 +25,6 @@ class ScriptOperation extends AbstractOperation implements OperationInterface
         foreach ($this->payload as $command) {
             $this->output($this->shell->sendSmartCommand($command, false, $this->timeout, true));
         }
-
-        return true;
     }
 
     /**

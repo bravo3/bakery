@@ -23,10 +23,12 @@ interface RepositoryCloner
     public function setShell(Shell $shell);
 
     /**
-     * Checkout a revision/tag/branch
-     *
-     * @param $tag
-     * @return bool
+     * Clone and checkout a revision/tag/branch
+     */
+    public function cloneRepo();
+
+    /**
+     * Assume the repository is already cloned, do a new checkout/update
      */
     public function checkout();
 

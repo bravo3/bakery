@@ -50,8 +50,6 @@ interface OperationInterface extends LoggerAwareInterface
 
     /**
      * Run the operation
-     *
-     * @return bool
      */
     public function execute();
 

@@ -4,7 +4,7 @@ namespace Bravo3\Bakery\Operation;
 use Bravo3\Bakery\Entity\Repository;
 use Bravo3\Bakery\Enum\Phase;
 use Bravo3\Bakery\Enum\RepositoryType;
-use Bravo3\Bakery\Exception\BakeryException;
+use Bravo3\Bakery\Exception\UnexpectedValueException;
 use Bravo3\Bakery\Service\Cloner\GitCloner;
 use Bravo3\Bakery\Service\Cloner\RepositoryCloner;
 use Bravo3\Bakery\Service\Cloner\SvnCloner;
@@ -23,14 +23,13 @@ class CodeCheckoutOperation extends AbstractOperation implements OperationInterf
     public function execute()
     {
         if (!($this->payload instanceof Repository)) {
-            $this->status(Phase::ERROR(), 0, 0, "Payload is not a repository");
-            return false;
+            throw new UnexpectedValueException("Payload is not a repository");
         }
 
         // Cloner - will checkout/clone svn/git repos
         $cloner = $this->getCloner();
         if (!$cloner) {
-            return false;
+            throw new UnexpectedValueException("Unable to retrieve cloner");
         }
 
         $this->status(Phase::CODE_CHECKOUT());
@@ -59,22 +58,21 @@ class CodeCheckoutOperation extends AbstractOperation implements OperationInterf
         $this->logger->debug("Cloning repository: ".$this->payload->getUri());
 
         try {
-            $result = $cloner->checkout();
+            $cloner->cloneRepo();
             $this->rawOutput($cloner->getOutput());
-        } catch (BakeryException $e) {
+        } catch (\Exception $e) {
             $this->rawOutput($cloner->getOutput());
             $class = explode('\\', get_class($e));
             $this->logger->error(array_pop($class).': '.$e->getMessage());
-            $result = false;
+            throw $e;
+        } finally {
+            // Remove credentials from the remote
+            if ($installed_credentials) {
+                $this->logger->debug("Removing installed credentials");
+                $credential_helper->cleanup();
+            }
         }
 
-        // Remove credentials from the remote
-        if ($installed_credentials) {
-            $this->logger->debug("Removing installed credentials");
-            //$credential_helper->cleanup();
-        }
-
-        return $result;
     }
 
     /**

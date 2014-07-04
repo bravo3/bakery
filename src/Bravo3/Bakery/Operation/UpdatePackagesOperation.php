@@ -3,6 +3,7 @@ namespace Bravo3\Bakery\Operation;
 
 use Bravo3\Bakery\Enum\PackagerType;
 use Bravo3\Bakery\Enum\Phase;
+use Bravo3\Bakery\Exception\ApplicationException;
 
 class UpdatePackagesOperation extends AbstractOperation implements OperationInterface
 {
@@ -10,8 +11,6 @@ class UpdatePackagesOperation extends AbstractOperation implements OperationInte
 
     /**
      * Run the operation
-     *
-     * @return bool
      */
     public function execute()
     {
@@ -34,11 +33,10 @@ class UpdatePackagesOperation extends AbstractOperation implements OperationInte
         foreach ($cmds as $cmd) {
             if (!$this->sendCommand($cmd, self::CMD_TIMEOUT, $allowed_errors)) {
                 $this->exitRoot();
-                return false;
+                throw new ApplicationException("Packager failed during update");
             }
         }
 
         $this->exitRoot();
-        return true;
     }
 } 

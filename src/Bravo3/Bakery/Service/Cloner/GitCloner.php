@@ -18,11 +18,8 @@ class GitCloner extends AbstractCloner implements RepositoryCloner
 
     /**
      * Checkout a tag/branch
-     *
-     * @param $tag
-     * @return bool
      */
-    public function checkout()
+    public function cloneRepo()
     {
         $this->addLog($this->getPrompt());
         $this->shell->sendln('git clone "'.$this->repo->getUri().'" "'.$this->repo->getCheckoutPath().'"');
@@ -79,7 +76,7 @@ class GitCloner extends AbstractCloner implements RepositoryCloner
                 $timeout += 0.5;
 
                 if ($timeout >= self::FAILSAFE_TIMEOUT) {
-                    throw new ApplicationException("Git error");
+                    throw new ApplicationException("Git timeout");
                 }
             }
 
@@ -87,13 +84,20 @@ class GitCloner extends AbstractCloner implements RepositoryCloner
 
         $this->output = substr($this->output, 0, -strlen($this->shell->getSmartMarker()));
 
+        $this->checkout();
+    }
+
+    /**
+     * Assume the repository is already cloned, do a new checkout
+     */
+    public function checkout()
+    {
         if ($this->repo->getTag()) {
             $this->sendCommand('cd "'.$this->repo->getCheckoutPath().'"');
             $this->sendCommand('git checkout "'.$this->repo->getTag().'"');
             $this->sendCommand('cd ~');
         }
-
-        return true;
     }
+
 
 }

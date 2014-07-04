@@ -46,7 +46,8 @@ class BakeryTest extends \PHPUnit_Framework_TestCase
         $repo->setRepositoryType(RepositoryType::GIT());
         $repo->setCheckoutPath('/tmp/test-repo');
         $repo->setUri('git@github.com:jordonsc/hyperion_dbal.git');
-        $repo->setPrivateKey(file_get_contents('/home/jordon/.ssh/jordon.pem'));
+        $repo->setPrivateKey(file_get_contents(__DIR__.'/Resources/test-key.pem'));
+        $repo->setPassword('password');
         $repo->setTag('c38a0835235003a08d3f5f851f57ba5914cff98e');
         $repo->setHostFingerprint('16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48');
 
@@ -66,7 +67,7 @@ class BakeryTest extends \PHPUnit_Framework_TestCase
 //            new InstallPackagesOperation(['apache2', 'mysql-server'])
 //        );
 
-        $this->assertTrue($bakery->bake($schema));
+        $bakery->bake($schema);
     }
 
 }

@@ -3,6 +3,7 @@ namespace Bravo3\Bakery\Operation;
 
 use Bravo3\Bakery\Enum\PackagerType;
 use Bravo3\Bakery\Enum\Phase;
+use Bravo3\Bakery\Exception\ApplicationException;
 
 class InstallPackagesOperation extends AbstractOperation implements OperationInterface
 {
@@ -10,8 +11,6 @@ class InstallPackagesOperation extends AbstractOperation implements OperationInt
 
     /**
      * Run the operation
-     *
-     * @return bool
      */
     public function execute()
     {
@@ -30,7 +29,7 @@ class InstallPackagesOperation extends AbstractOperation implements OperationInt
                 $cmd_base = 'apt-get -y install ';
                 if (!$this->sendCommand("apt-get -y update", self::CMD_TIMEOUT)) {
                     $this->exitRoot();
-                    return false;
+                    throw new ApplicationException("Update failed");
                 }
                 break;
         }
@@ -39,10 +38,9 @@ class InstallPackagesOperation extends AbstractOperation implements OperationInt
         $package = implode(' ', $this->payload);
         if (!$this->sendCommand($cmd_base.$package, self::CMD_TIMEOUT)) {
             $this->exitRoot();
-            return false;
+            throw new ApplicationException("Install failed");
         }
 
         $this->exitRoot();
-        return true;
     }
 } 

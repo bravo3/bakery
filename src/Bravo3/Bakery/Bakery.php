@@ -4,6 +4,7 @@ namespace Bravo3\Bakery;
 use Bravo3\Bakery\Entity\Host;
 use Bravo3\Bakery\Entity\Schema;
 use Bravo3\Bakery\Enum\Phase;
+use Bravo3\Bakery\Exception\ConnectionException;
 use Bravo3\Bakery\Operation\OperationInterface;
 use Bravo3\SSH\Connection;
 use Bravo3\SSH\Enum\TerminalType;
@@ -113,14 +114,13 @@ class Bakery implements LoggerAwareInterface
      *
      * @param Schema $schema
      * @param int    $terminal_width
-     * @return bool
      */
     public function bake(Schema $schema, $terminal_width = 180)
     {
         // Connect to host
         $con = $this->connect();
         if (!$con) {
-            return false;
+            throw new ConnectionException("Unable to connect to bakery host");
         }
 
         // Get an SSH stream
@@ -138,14 +138,16 @@ class Bakery implements LoggerAwareInterface
             $operation->setPackagerType($schema->getPackagerType());
             $operation->setShell($shell);
             $operation->setConnection($con);
-            if (!$operation->execute()) {
-                $this->status(Phase::ERROR(), $pos + 1, $total, 'Operation failed, aborting');
-                return false;
+            try {
+                $operation->execute();
+            } catch (\Exception $e) {
+                $this->status(Phase::ERROR(), $pos + 1, $total, 'Operation failed ('.$e->getMessage().')');
+                $con->disconnectChain();
+                throw $e;
             }
         }
 
         $con->disconnectChain();
-        return true;
     }
 
     /**
