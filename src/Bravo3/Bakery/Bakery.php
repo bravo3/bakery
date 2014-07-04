@@ -112,9 +112,10 @@ class Bakery implements LoggerAwareInterface
      * Bake the host
      *
      * @param Schema $schema
+     * @param int    $terminal_width
      * @return bool
      */
-    public function bake(Schema $schema)
+    public function bake(Schema $schema, $terminal_width = 300)
     {
         // Connect to host
         $con = $this->connect();
@@ -123,8 +124,8 @@ class Bakery implements LoggerAwareInterface
         }
 
         // Get an SSH stream
-        $shell = $con->getShell(new Terminal(1000, 25, TerminalUnit::CHARACTERS));
-        $this->status(Phase::ENVIRONMENT(), 1, 1, 'Configuring environment');
+        $this->status(Phase::ENVIRONMENT(), 0, 0, 'Configuring environment');
+        $shell = $con->getShell(new Terminal($terminal_width, 25, TerminalUnit::CHARACTERS));
         $shell->setSmartConsole();
 
         // Traverse operations
@@ -170,8 +171,8 @@ class Bakery implements LoggerAwareInterface
         // Connect to target host
         $this->status(
             Phase::CONNECTION(),
-            1,
-            1,
+            0,
+            0,
             "Connecting to target host ".$this->host->getHostname().':'.$this->host->getPort()
         );
 
@@ -179,13 +180,13 @@ class Bakery implements LoggerAwareInterface
         $con->setLogger($this->logger);
 
         if (!$con->connect()) {
-            $this->status(Phase::ERROR(), 1, 1, "Failed to connect to target host");
+            $this->status(Phase::ERROR(), 0, 0, "Failed to connect to target host");
             $con->disconnectChain();
             return null;
         }
 
         if (!$con->authenticate()) {
-            $this->status(Phase::ERROR(), 1, 1, "Failed to authenticate on target host");
+            $this->status(Phase::ERROR(), 0, 0, "Failed to authenticate on target host");
             $con->disconnectChain();
             return null;
         }
