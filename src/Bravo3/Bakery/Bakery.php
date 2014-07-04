@@ -115,7 +115,7 @@ class Bakery implements LoggerAwareInterface
      * @param int    $terminal_width
      * @return bool
      */
-    public function bake(Schema $schema, $terminal_width = 300)
+    public function bake(Schema $schema, $terminal_width = 180)
     {
         // Connect to host
         $con = $this->connect();
