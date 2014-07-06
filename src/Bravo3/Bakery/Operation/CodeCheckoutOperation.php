@@ -58,7 +58,7 @@ class CodeCheckoutOperation extends AbstractOperation implements OperationInterf
         $this->logger->debug("Cloning repository: ".$this->payload->getUri());
 
         try {
-            $cloner->cloneRepo();
+            $cloner->checkout();
             $this->rawOutput($cloner->getOutput());
         } catch (\Exception $e) {
             $this->rawOutput($cloner->getOutput());
