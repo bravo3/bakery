@@ -23,7 +23,7 @@ trait YumTrait
         $retry = max($retry, (int)$retry);
         $start = time();
         $cmd = 'ps a | grep yum | grep -v grep';
-        while ((bool)$this->shell->sendSmartCommand($cmd, false, 3, true)) {
+        while ((bool)$this->shell->sendSmartCommand($cmd, true, 3, true)) {
             if (time() > $start + $timeout) {
                 throw new ApplicationException("Timeout waiting for yum to become available");
             }

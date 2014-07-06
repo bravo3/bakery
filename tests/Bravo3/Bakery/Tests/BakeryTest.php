@@ -26,7 +26,8 @@ class BakeryTest extends \PHPUnit_Framework_TestCase
     public function testStuff()
     {
         //$host            = new Host('127.0.0.1', 22, new KeyCredential('jordon', null, '/home/jordon/.ssh/jordon.pem'));
-        $host            = new Host('54.206.100.211', 22, new KeyCredential('ec2-user', null, '/home/jordon/.ssh/test-sydney.pem'));
+        //$host = new Host('54.206.100.211', 22, new KeyCredential('ec2-user', null, '/home/jordon/.ssh/test-sydney.pem'));
+        $host = new Host('54.79.108.44', 22, new KeyCredential('ec2-user', null, '/home/jordon/.ssh/test-sydney.pem'));
         $logger_bake     = new FileLogger("/tmp/bakery_bake.log", false, true);
         $logger_callback = new FileLogger("/tmp/bakery_callback.log", false, true);
         $logger_out      = new FileLogger("/tmp/bakery_out.log", false, true);
@@ -52,21 +53,25 @@ class BakeryTest extends \PHPUnit_Framework_TestCase
         $repo->setTag('0.0.1-alpha');
         $repo->setHostFingerprint('16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48');
 
+        $standards = new Repository();
+        $standards->setRepositoryType(RepositoryType::GIT());
+        $standards->setUri('https://github.com/bravo3/standards.git');
+        $standards->setTag('1.0.0');
+        $standards->setCheckoutPath('/tmp/bravo3/standards');
+
         $schema = new Schema(PackagerType::YUM());
         $schema->addOperation(
-            new EnvironmentOperation([
-                'env' => 'bake',
-                'action' => '1234',
-            ])
-        )->addOperation(
-            new CodeCheckoutOperation($repo)
-        );
+            new EnvironmentOperation(['env' => 'bake', 'action' => '1234',])
+        //)->addOperation(
+        //        new InstallPackagesOperation(['git'])
+        //    )->addOperation(
+        //        new CodeCheckoutOperation($standards)
+        //    )->addOperation(
+        //        new UpdatePackagesOperation()
+            )->addOperation(
+                new CodeCheckoutOperation($repo)
+            );
 
-//            ->addOperation(
-//                new UpdatePackagesOperation()
-//        )->addOperation(
-//            new InstallPackagesOperation(['apache2', 'mysql-server'])
-//        );
 
         $bakery->bake($schema);
     }
