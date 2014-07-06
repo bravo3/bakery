@@ -188,7 +188,7 @@ class AbstractOperation
      */
     protected function sendCommand($cmd, $timeout = 15, array $allowed_errors = [])
     {
-        $this->logger->debug("Exec: ".$cmd);
+        $this->logger->debug("Execute: ".$cmd);
         $log_file = $this->log_prefix.'-'.(self::$log_index++).'.error.log';
         $output   = $this->shell->sendSmartCommand($cmd.' 2> '.$log_file, false, $timeout, true);
         $errors   = trim($this->shell->sendSmartCommand('cat '.$log_file, true, 3, true));
@@ -264,6 +264,7 @@ class AbstractOperation
     protected function exitRoot()
     {
         $this->sendCommand('exit', 2, ['logout']);
+        $this->shell->setSmartConsole();
     }
 
     /**

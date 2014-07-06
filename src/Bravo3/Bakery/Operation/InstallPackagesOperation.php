@@ -4,9 +4,12 @@ namespace Bravo3\Bakery\Operation;
 use Bravo3\Bakery\Enum\PackagerType;
 use Bravo3\Bakery\Enum\Phase;
 use Bravo3\Bakery\Exception\ApplicationException;
+use Bravo3\Bakery\Operation\Traits\YumTrait;
 
 class InstallPackagesOperation extends AbstractOperation implements OperationInterface
 {
+    use YumTrait;
+
     const CMD_TIMEOUT = 60;
 
     /**
@@ -23,6 +26,7 @@ class InstallPackagesOperation extends AbstractOperation implements OperationInt
         switch ($this->packager_type) {
             default:
             case PackagerType::YUM():
+                $this->waitForYum(self::CMD_TIMEOUT);
                 $cmd_base = 'yum -y install ';
                 break;
             case PackagerType::APT():
@@ -38,7 +42,7 @@ class InstallPackagesOperation extends AbstractOperation implements OperationInt
         $package = implode(' ', $this->payload);
         if (!$this->sendCommand($cmd_base.$package, self::CMD_TIMEOUT)) {
             $this->exitRoot();
-            throw new ApplicationException("Install failed");
+            throw new ApplicationException("System packages install failed");
         }
 
         $this->exitRoot();
