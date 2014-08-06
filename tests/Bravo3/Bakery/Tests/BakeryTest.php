@@ -12,6 +12,7 @@ use Bravo3\Bakery\Operation\CodeCheckoutOperation;
 use Bravo3\Bakery\Operation\EnvironmentOperation;
 use Bravo3\Bakery\Operation\InstallPackagesOperation;
 use Bravo3\Bakery\Operation\ScriptOperation;
+use Bravo3\Bakery\Operation\StartServicesOperation;
 use Bravo3\Bakery\Operation\UpdatePackagesOperation;
 use Bravo3\Bakery\Tests\Resources\FileLogger;
 use Bravo3\SSH\Credentials\KeyCredential;
@@ -25,9 +26,9 @@ class BakeryTest extends \PHPUnit_Framework_TestCase
      */
     public function testStuff()
     {
-        //$host            = new Host('127.0.0.1', 22, new KeyCredential('jordon', null, '/home/jordon/.ssh/jordon.pem'));
+        $host = new Host('127.0.0.1', 22, new KeyCredential('jordon', null, '/home/jordon/.ssh/jordon.pem'));
         //$host = new Host('54.206.100.211', 22, new KeyCredential('ec2-user', null, '/home/jordon/.ssh/test-sydney.pem'));
-        $host = new Host('54.79.108.44', 22, new KeyCredential('ec2-user', null, '/home/jordon/.ssh/test-sydney.pem'));
+        //$host = new Host('54.79.108.44', 22, new KeyCredential('ec2-user', null, '/home/jordon/.ssh/test-sydney.pem'));
         $logger_bake     = new FileLogger("/tmp/bakery_bake.log", false, true);
         $logger_callback = new FileLogger("/tmp/bakery_callback.log", false, true);
         $logger_out      = new FileLogger("/tmp/bakery_out.log", false, true);
@@ -62,14 +63,16 @@ class BakeryTest extends \PHPUnit_Framework_TestCase
         $schema = new Schema(PackagerType::YUM());
         $schema->addOperation(
             new EnvironmentOperation(['env' => 'bake', 'action' => '1234',])
-        //)->addOperation(
-        //        new InstallPackagesOperation(['git'])
-        //    )->addOperation(
-        //        new CodeCheckoutOperation($standards)
-        //    )->addOperation(
-        //        new UpdatePackagesOperation()
-            )->addOperation(
-                new CodeCheckoutOperation($repo)
+        )->addOperation(
+                new StartServicesOperation(['sysvinit/apache2', 'upstart/tty6'])
+            //    )->addOperation(
+            //        new InstallPackagesOperation(['git'])
+            //    )->addOperation(
+            //        new CodeCheckoutOperation($standards)
+            //    )->addOperation(
+            //        new UpdatePackagesOperation()
+            //    )->addOperation(
+            //        new CodeCheckoutOperation($repo)
             );
 
 
