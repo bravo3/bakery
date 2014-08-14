@@ -26,7 +26,7 @@ class UpdatePackagesOperation extends AbstractOperation implements OperationInte
             case PackagerType::YUM():
                 $this->waitForYum(self::CMD_TIMEOUT);
                 $cmds           = ['yum -y update'];
-                $allowed_errors = [];
+                $allowed_errors = ['Existing lock '];
                 break;
             case PackagerType::APT():
                 $cmds           = ['apt-get -y update', 'apt-get -y upgrade'];

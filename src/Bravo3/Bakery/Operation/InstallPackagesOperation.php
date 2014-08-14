@@ -28,9 +28,11 @@ class InstallPackagesOperation extends AbstractOperation implements OperationInt
             case PackagerType::YUM():
                 $this->waitForYum(self::CMD_TIMEOUT);
                 $cmd_base = 'yum -y install ';
+                $allowed_errors = ['Existing lock '];
                 break;
             case PackagerType::APT():
                 $cmd_base = 'apt-get -y install ';
+                $allowed_errors = [];
                 if (!$this->sendCommand("apt-get -y update", self::CMD_TIMEOUT)) {
                     $this->exitRoot();
                     throw new ApplicationException("Update failed");
@@ -40,7 +42,7 @@ class InstallPackagesOperation extends AbstractOperation implements OperationInt
 
         // Install all packages
         $package = implode(' ', $this->payload);
-        if (!$this->sendCommand($cmd_base.$package, self::CMD_TIMEOUT)) {
+        if (!$this->sendCommand($cmd_base.$package, self::CMD_TIMEOUT, $allowed_errors)) {
             $this->exitRoot();
             throw new ApplicationException("System packages install failed");
         }
