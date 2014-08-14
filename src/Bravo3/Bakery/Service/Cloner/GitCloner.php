@@ -3,6 +3,9 @@ namespace Bravo3\Bakery\Service\Cloner;
 
 use Bravo3\Bakery\Exception\ApplicationException;
 use Bravo3\Bakery\Exception\SecurityException;
+use Bravo3\NetworkProxy\Implementation\HttpProxy;
+use Bravo3\NetworkProxy\Implementation\SocksProxy;
+use Bravo3\NetworkProxy\NetworkProxyInterface;
 
 class GitCloner extends AbstractCloner implements RepositoryCloner
 {
@@ -29,12 +32,14 @@ class GitCloner extends AbstractCloner implements RepositoryCloner
             $git .= '.git';
         }
 
+        $cmd = $this->getGitCmd($this->repo->getProxy());
+
         // Test if the directory exists
         $exists = $this->shell->sendSmartCommand('test -d "'.$git.'" && echo "EXISTS"', true, 5, true) == 'EXISTS';
 
         if (!$exists) {
             // Git repo not found, clone it
-            $this->shell->sendln('git clone "'.$this->repo->getUri().'" "'.$this->repo->getCheckoutPath().'"');
+            $this->shell->sendln($cmd.' clone "'.$this->repo->getUri().'" "'.$this->repo->getCheckoutPath().'"');
 
             $checked_fingerprint = false;
             $timeout             = 0;
@@ -101,9 +106,9 @@ class GitCloner extends AbstractCloner implements RepositoryCloner
         $wd = $this->shell->sendSmartCommand('pwd', true, 5, true);
         $this->sendCommand('cd "'.$this->repo->getCheckoutPath().'"');
 
-        $this->sendCommand('git fetch --all');
+        $this->sendCommand($cmd.' fetch --all');
         if ($this->repo->getTag()) {
-            $this->sendCommand('git reset --hard "'.$this->repo->getTag().'"');
+            $this->sendCommand($cmd.' reset --hard "'.$this->repo->getTag().'"');
         }
 
         if ($wd) {
@@ -111,8 +116,36 @@ class GitCloner extends AbstractCloner implements RepositoryCloner
         } else {
             $this->sendCommand('cd ~');
         }
+    }
 
+    /**
+     * Get the git command with appropriate params
+     *
+     * @return string
+     */
+    protected function getGitCmd(NetworkProxyInterface $proxy = null)
+    {
+        $cmd = 'git';
 
+        if ($proxy) {
+            $proxy_line = '';
+            if ($proxy->getUsername()) {
+                $proxy_line .= $proxy->getUsername();
+                if ($proxy->getPassword()) {
+                    $proxy_line .= ':'.$proxy->getPassword();
+                }
+                $proxy_line .= '@';
+            }
+            $proxy_line .= $proxy->getHostname().':'.$proxy->getPort();
+
+            if ($proxy instanceof SocksProxy) {
+                $cmd .= ' -c "http.proxy=socks://'.$proxy_line.'" -c "https.proxy=socks://'.$proxy_line.'"';
+            } elseif ($proxy instanceof HttpProxy) {
+                $cmd .= ' -c "http.proxy=http://'.$proxy_line.'" -c "https.proxy=http://'.$proxy_line.'"';
+            }
+        }
+
+        return $cmd;
     }
 
 

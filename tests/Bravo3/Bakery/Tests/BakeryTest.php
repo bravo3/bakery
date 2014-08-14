@@ -15,6 +15,7 @@ use Bravo3\Bakery\Operation\ScriptOperation;
 use Bravo3\Bakery\Operation\StartServicesOperation;
 use Bravo3\Bakery\Operation\UpdatePackagesOperation;
 use Bravo3\Bakery\Tests\Resources\FileLogger;
+use Bravo3\NetworkProxy\Implementation\SocksProxy;
 use Bravo3\SSH\Credentials\KeyCredential;
 use Bravo3\SSH\Credentials\PasswordCredential;
 
@@ -50,8 +51,8 @@ class BakeryTest extends \PHPUnit_Framework_TestCase
         $repo->setUri('git@github.com:jordonsc/hyperion_dbal.git');
         $repo->setPrivateKey(file_get_contents(__DIR__.'/Resources/test-key.pem'));
         $repo->setPassword('password');
-        //$repo->setTag('c38a0835235003a08d3f5f851f57ba5914cff98e');
-        $repo->setTag('0.0.1-alpha');
+        $repo->setTag('c38a0835235003a08d3f5f851f57ba5914cff98e');
+        $repo->setTag('0.0.4-beta');
         $repo->setHostFingerprint('16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48');
 
         $standards = new Repository();
@@ -59,16 +60,17 @@ class BakeryTest extends \PHPUnit_Framework_TestCase
         $standards->setUri('https://github.com/bravo3/standards.git');
         $standards->setTag('1.0.0');
         $standards->setCheckoutPath('/tmp/bravo3/standards');
+        $standards->setProxy(new SocksProxy('localhost', 5501));
 
         $schema = new Schema(PackagerType::YUM());
         $schema->addOperation(
             new EnvironmentOperation(['env' => 'bake', 'action' => '1234',])
-        )->addOperation(
-                new StartServicesOperation(['sysvinit/apache2', 'upstart/tty6'])
+            //    )->addOperation(
+            //    new StartServicesOperation(['sysvinit/apache2', 'upstart/tty6'])
             //    )->addOperation(
             //        new InstallPackagesOperation(['git'])
-            //    )->addOperation(
-            //        new CodeCheckoutOperation($standards)
+                )->addOperation(
+                    new CodeCheckoutOperation($standards)
             //    )->addOperation(
             //        new UpdatePackagesOperation()
             //    )->addOperation(

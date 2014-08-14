@@ -2,6 +2,7 @@
 namespace Bravo3\Bakery\Entity;
 
 use Bravo3\Bakery\Enum\RepositoryType;
+use Bravo3\NetworkProxy\NetworkProxyInterface;
 
 class Repository
 {
@@ -44,6 +45,11 @@ class Repository
      * @var string
      */
     protected $host_fingerprint = null;
+
+    /**
+     * @var NetworkProxyInterface
+     */
+    protected $proxy = null;
 
     /**
      * Set Password
@@ -223,6 +229,26 @@ class Repository
         return $this->host_fingerprint;
     }
 
+    /**
+     * Set Proxy
+     *
+     * @param NetworkProxyInterface $proxy
+     * @return $this
+     */
+    public function setProxy($proxy)
+    {
+        $this->proxy = $proxy;
+        return $this;
+    }
 
+    /**
+     * Get Proxy
+     *
+     * @return NetworkProxyInterface
+     */
+    public function getProxy()
+    {
+        return $this->proxy;
+    }
 
 } 
