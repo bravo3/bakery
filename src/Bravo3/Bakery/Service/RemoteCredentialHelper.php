@@ -64,6 +64,7 @@ class RemoteCredentialHelper
     public function addPrivateKey($key, $password = null)
     {
         // Send to remote
+        $key = str_replace("\r\n", "\n", $key);
         $fn = md5($key);
         $this->createTextFile($key, $fn);
         $this->files[] = $fn;
