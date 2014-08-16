@@ -195,7 +195,15 @@ class AbstractOperation
         $this->output($output);
 
         if ($errors) {
-            if (in_array($errors, $allowed_errors)) {
+            $false_positive = false;
+            foreach ($allowed_errors as $allowed_error) {
+                if (substr($errors, 0, strlen($allowed_error)) == $allowed_error) {
+                    $false_positive = true;
+                    break;
+                }
+            }
+
+            if ($false_positive) {
                 // Acceptable errors
                 $this->logger->notice($errors);
                 return true;
@@ -252,10 +260,7 @@ class AbstractOperation
      */
     protected function enterRoot()
     {
-        $this->shell->sendln("sudo -i");
-        $output = $this->shell->waitForContent(0.5);
-        $this->output($output);
-        $this->shell->setSmartConsole();
+        $this->sendDumbCommand('sudo -En su');
     }
 
     /**
@@ -263,7 +268,19 @@ class AbstractOperation
      */
     protected function exitRoot()
     {
-        $this->sendCommand('exit', 2, ['logout']);
+        $this->sendDumbCommand('exit');
+    }
+
+    /**
+     * Send a command and ignore the output, reset smart console
+     *
+     * @param $cmd
+     */
+    protected function sendDumbCommand($cmd)
+    {
+        $this->shell->sendln($cmd);
+        $this->shell->waitForContent(0.5);
+        $this->output($cmd);
         $this->shell->setSmartConsole();
     }
 
