@@ -41,7 +41,7 @@ class StartServicesOperation extends AbstractOperation implements OperationInter
             }
 
             $service_type = ServiceType::memberByKey(strtoupper($manager));
-            $allowed_errors = [];
+            $allowed_errors = ['start: Job is already running: '];
 
             switch ($service_type) {
                 default:
