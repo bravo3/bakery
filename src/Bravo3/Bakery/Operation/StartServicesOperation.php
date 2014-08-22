@@ -59,6 +59,7 @@ class StartServicesOperation extends AbstractOperation implements OperationInter
             }
 
             if (!$this->sendCommand($cmd, 15, $allowed_errors)) {
+                $this->exitRoot();
                 throw new ApplicationException("Failed to start service [".$service_name."]");
             }
 

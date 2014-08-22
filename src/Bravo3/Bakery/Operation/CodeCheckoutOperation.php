@@ -5,15 +5,18 @@ use Bravo3\Bakery\Entity\Repository;
 use Bravo3\Bakery\Enum\Phase;
 use Bravo3\Bakery\Enum\RepositoryType;
 use Bravo3\Bakery\Exception\UnexpectedValueException;
+use Bravo3\Bakery\Operation\Traits\RootableTrait;
 use Bravo3\Bakery\Service\Cloner\GitCloner;
 use Bravo3\Bakery\Service\Cloner\RepositoryCloner;
 use Bravo3\Bakery\Service\Cloner\SvnCloner;
 use Bravo3\Bakery\Service\RemoteCredentialHelper;
 
-class CodeCheckoutOperation extends AbstractOperation implements OperationInterface
+class CodeCheckoutOperation extends AbstractOperation implements OperationInterface, RootableInterface
 {
     protected $private_key_file;
     const PASSPHRASE_HINT = "passphrase";
+
+    use RootableTrait;
 
     /**
      * Run the operation
@@ -33,6 +36,10 @@ class CodeCheckoutOperation extends AbstractOperation implements OperationInterf
         }
 
         $this->status(Phase::CODE_CHECKOUT());
+
+        if ($this->run_as_root) {
+            $this->enterRoot();
+        }
 
         // Will install private keys, passwords, etc for the repos
         $credential_helper = new RemoteCredentialHelper($this->shell);
@@ -66,6 +73,10 @@ class CodeCheckoutOperation extends AbstractOperation implements OperationInterf
             $this->logger->error(array_pop($class).': '.$e->getMessage());
             throw $e;
         } finally {
+            if ($this->run_as_root) {
+                $this->exitRoot();
+            }
+
             // Remove credentials from the remote
             if ($installed_credentials) {
                 $this->logger->debug("Removing installed credentials");
