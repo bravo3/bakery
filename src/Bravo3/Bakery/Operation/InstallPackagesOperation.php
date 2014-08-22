@@ -32,7 +32,7 @@ class InstallPackagesOperation extends AbstractOperation implements OperationInt
                 break;
             case PackagerType::APT():
                 $cmd_base = 'apt-get -y install ';
-                $allowed_errors = [];
+                $allowed_errors = ['Extracting templates from packages:'];
                 if (!$this->sendCommand("apt-get -y update", self::CMD_TIMEOUT)) {
                     $this->exitRoot();
                     throw new ApplicationException("Update failed");
@@ -44,7 +44,7 @@ class InstallPackagesOperation extends AbstractOperation implements OperationInt
         $package = implode(' ', $this->payload);
         if (!$this->sendCommand($cmd_base.$package, self::CMD_TIMEOUT, $allowed_errors)) {
             $this->exitRoot();
-            throw new ApplicationException("System packages install failed");
+            throw new ApplicationException("Installation of system packages failed");
         }
 
         $this->exitRoot();
