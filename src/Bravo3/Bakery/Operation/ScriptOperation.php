@@ -22,13 +22,14 @@ class ScriptOperation extends AbstractOperation implements OperationInterface, R
             $this->payload = explode("\n", $this->payload);
         }
 
+        $this->status(Phase::SCRIPT());
+
         if ($this->run_as_root) {
             $this->enterRoot();
         }
 
-        $this->status(Phase::SCRIPT());
-
         foreach ($this->payload as $command) {
+            $this->logger->debug("Exec: ".$command);
             $this->output($this->shell->sendSmartCommand($command, false, $this->timeout, true));
         }
 

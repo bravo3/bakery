@@ -16,9 +16,9 @@ class StartServicesOperation extends AbstractOperation implements OperationInter
      */
     public function execute()
     {
-        $this->enterRoot();
-
         $this->status(Phase::RUN_SERVICES());
+
+        $this->enterRoot();
 
         $services = (array)$this->payload;
 

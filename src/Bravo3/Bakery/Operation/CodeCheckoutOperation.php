@@ -73,14 +73,14 @@ class CodeCheckoutOperation extends AbstractOperation implements OperationInterf
             $this->logger->error(array_pop($class).': '.$e->getMessage());
             throw $e;
         } finally {
-            if ($this->run_as_root) {
-                $this->exitRoot();
-            }
-
             // Remove credentials from the remote
             if ($installed_credentials) {
                 $this->logger->debug("Removing installed credentials");
                 $credential_helper->cleanup();
+            }
+
+            if ($this->run_as_root) {
+                $this->exitRoot();
             }
         }
 
