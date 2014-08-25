@@ -308,7 +308,7 @@ class AbstractOperation
      */
     protected function status(Phase $phase, $step = 0, $total = 0, $message = '')
     {
-        $this->logger->info('['.$phase->value().'] '.$message);
+        $this->logger->debug('['.$phase->value().'] '.$message);
 
         if ($this->callback) {
             $closure = $this->callback;

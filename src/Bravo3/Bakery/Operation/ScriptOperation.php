@@ -29,7 +29,6 @@ class ScriptOperation extends AbstractOperation implements OperationInterface, R
         }
 
         foreach ($this->payload as $command) {
-            $this->logger->debug("Exec: ".$command);
             $this->output($this->shell->sendSmartCommand($command, false, $this->timeout, true));
         }
 
