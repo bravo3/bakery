@@ -106,7 +106,7 @@ class GitCloner extends AbstractCloner implements RepositoryCloner
         $wd = $this->shell->sendSmartCommand('pwd', true, 5, true);
         $this->sendCommand('cd "'.$this->repo->getCheckoutPath().'"');
 
-        $this->sendCommand($cmd.' fetch origin --all');
+        $this->sendCommand($cmd.' fetch origin');
         if ($this->repo->getTag()) {
             $this->sendCommand($cmd.' reset --hard "origin/'.$this->repo->getTag().'"');
         }
