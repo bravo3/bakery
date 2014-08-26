@@ -30,7 +30,7 @@ class UpdatePackagesOperation extends AbstractOperation implements OperationInte
                 break;
             case PackagerType::APT():
                 $cmds           = ['apt-get -y update', 'apt-get -y upgrade'];
-                $allowed_errors = ['Extracting templates from packages: 100%'];
+                $allowed_errors = ['Extracting templates from packages:'];
                 break;
         }
 
