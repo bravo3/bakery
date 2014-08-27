@@ -279,7 +279,8 @@ class AbstractOperation
     protected function sendDumbCommand($cmd)
     {
         $this->shell->sendln($cmd);
-        $this->shell->waitForContent(1.5);
+        sleep(1);
+        $this->shell->readUntilPause(1.0);
         $this->output($cmd);
         $this->shell->setSmartConsole();
     }
