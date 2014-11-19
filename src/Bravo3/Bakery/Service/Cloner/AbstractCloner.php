@@ -6,7 +6,6 @@ use Bravo3\SSH\Shell;
 
 class AbstractCloner
 {
-
     /**
      * @var Repository
      */
@@ -26,6 +25,11 @@ class AbstractCloner
      * @var string
      */
     protected $prompt = '# ';
+
+    /**
+     * @var int
+     */
+    protected $timeout = 120;
 
     /**
      * Set repository
@@ -108,4 +112,25 @@ class AbstractCloner
         $this->addLog($this->shell->sendSmartCommand($cmd, true, $timeout, true));
     }
 
+    /**
+     * Get the connection timeout in seconds
+     *
+     * @return int
+     */
+    public function getTimeout()
+    {
+        return $this->timeout;
+    }
+
+    /**
+     * Set the connection timeout in seconds
+     *
+     * @param int $timeout
+     * @return $this
+     */
+    public function setTimeout($timeout)
+    {
+        $this->timeout = $timeout;
+        return $this;
+    }
 }

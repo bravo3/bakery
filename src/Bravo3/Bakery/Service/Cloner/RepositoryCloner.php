@@ -42,4 +42,10 @@ interface RepositoryCloner
      */
     public function setPrompt($prompt);
 
+    /**
+     * Get the connection timeout in seconds
+     *
+     * @return int
+     */
+    public function getTimeout();
 }

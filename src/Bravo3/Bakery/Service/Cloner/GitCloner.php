@@ -9,7 +9,6 @@ use Bravo3\NetworkProxy\NetworkProxyInterface;
 
 class GitCloner extends AbstractCloner implements RepositoryCloner
 {
-    const FAILSAFE_TIMEOUT  = 10;
     const FINGERPRINT_ERROR = "Fingerprint mismatch - possible man in the middle attack!";
     const FINGERPRINT_REGEX = '/([A-Z]{3}) key fingerprint is (.+)\./';
     const NOT_FOUND_REGEX   = '/git: command not found/';
@@ -92,7 +91,7 @@ class GitCloner extends AbstractCloner implements RepositoryCloner
                     // Nothing new
                     $timeout += 0.5;
 
-                    if ($timeout >= self::FAILSAFE_TIMEOUT) {
+                    if ($timeout >= $this->getTimeout()) {
                         throw new ApplicationException("Git timeout");
                     }
                 }
@@ -147,6 +146,4 @@ class GitCloner extends AbstractCloner implements RepositoryCloner
 
         return $cmd;
     }
-
-
 }
